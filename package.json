@@ -18,7 +18,7 @@
   "homepage": "https://github.com/Toss-middle-project/bufl_be#readme",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
-    "bcryptjs": "^3.0.2",
+    "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",

@@ -2,7 +2,7 @@ const express = require("express");
 const session = require("express-session");
 const router = express.Router();
 const db = require("../db/db");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const { v4: uuidv4 } = require("uuid");
 
 /**
