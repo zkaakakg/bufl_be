@@ -43,7 +43,7 @@ app.use(
     cookie: {
       httpOnly: true, // XSS 방지
       secure: true, // HTTPS 환경에서만 쿠키 전달
-      // sameSite: "lax", // 크로스사이트 요청 방지
+      sameSite: "none", // 크로스사이트 요청 방지
       maxAge: 1000 * 60 * 60 * 24, // 1일
     },
   })
