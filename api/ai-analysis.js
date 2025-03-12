@@ -324,6 +324,9 @@ router.get("/add-category", async (req, res) => {
     ];
 
     console.log(recommendResult);
+    if (!recommendResult) {
+      return res.status(400).json({ message: "추천 결과 없음" });
+    }
 
     const values = recommendResult.map((category, index) => {
       return [
