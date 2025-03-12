@@ -20,7 +20,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:3000", // 프론트엔드 주소
+    origin: "https://localhost:3000", // 프론트엔드 주소
     credentials: true, // 쿠키 허용
   })
 );
@@ -30,7 +30,7 @@ app.use(
     secret: "secret code", // 세션 암호화에 사용할 키
     resave: false, // 세션 변경 시마다 저장하는 설정
     saveUninitialized: true, // 세션 초기화 상태에서 저장할지 여부
-    cookie: { secure: false }, // https를 사용할 경우 true로 설정
+    cookie: { secure: true, sameSite: "None" }, // https를 사용할 경우 true로 설정
   })
 );
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
