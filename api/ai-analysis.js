@@ -9,6 +9,9 @@ const apiKey = process.env.ANTHROPIC_API_KEY;
 const anthropic = new Anthropic({
   apiKey: apiKey,
 });
+
+const analysisStore = new Map();
+const recommendStore = new Map();
 /**
  * @swagger
  * /api/ai-analysis/recommend:
@@ -278,10 +281,7 @@ router.get("/recommend", async (req, res) => {
     );
 
     const salary = salaryInfo[0].amount;
-    const transactions = req.session.analysisResult;
-    if (!transactions) {
-      return res.status(400).json({ message: "소비패턴 없음음" });
-    }
+    const transactions = analysisStore.get(userId);
 
     const recommendResult = await recommendRatio(
       salary,
@@ -289,8 +289,7 @@ router.get("/recommend", async (req, res) => {
       transactions
     );
 
-    delete req.session.transactions;
-    req.session.recommendResult = recommendResult.recommendRatio;
+    recommendStore.set(userId, recommendResult.recommendRatio);
     req.session.save();
 
     res.send(recommendResult);
@@ -313,8 +312,7 @@ router.get("/add-category", async (req, res) => {
       return res.status(401).json({ message: "세션 만료됨" });
 
     const userId = session[0].user_id;
-    const recommendResult = req.session.recommendResult;
-    console.log(recommendResult);
+    const recommendResult = recommendStore.get(userId);
 
     const colorList = [
       "#FF6B86",
@@ -359,9 +357,6 @@ router.get("/add-category", async (req, res) => {
       [values]
     );
 
-    // 세션에서 추천 결과 삭제
-    delete req.session.recommendResult;
-
     // 성공 응답
     res.status(201).json({
       message: `${recommendResult.length}개의 카테고리가 추가되었습니다.`,
@@ -398,8 +393,7 @@ router.get("/", async (req, res) => {
     }
 
     const analysisResult = await consumptionPattern(transactions);
-    req.session.analysisResult = analysisResult;
-    req.session.save();
+    analysisStore.set(userId, analysisResult);
 
     res.send(analysisResult);
   } catch (err) {
