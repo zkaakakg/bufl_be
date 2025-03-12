@@ -487,7 +487,7 @@ router.get("/account", async (req, res) => {
     );
 
     const [salaryAccount] = await db.query(
-      "SELECT bank_name, account_number FROM account WHERE id = (SELECT account_id FROM salary WHERE user_id = ?)",
+      "SELECT bank_name, account_number FROM account WHERE id IN (SELECT account_id FROM salary WHERE user_id = ?)",
       [userId]
     );
 
