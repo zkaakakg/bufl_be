@@ -279,6 +279,9 @@ router.get("/recommend", async (req, res) => {
 
     const salary = salaryInfo[0].amount;
     const transactions = req.session.analysisResult;
+    if (!transactions) {
+      return res.status(400).json({ message: "소비패턴 없음음" });
+    }
 
     const recommendResult = await recommendRatio(
       salary,
