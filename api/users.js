@@ -93,7 +93,7 @@ router.post("/", async (req, res) => {
 
     res.cookie("sessionId", sessionId, {
       httpOnly: true,
-      secure: true, // 배포 시 true (HTTPS 필수)
+      secure: false, // 배포 시 true (HTTPS 필수)
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7일 유지
     });
 
