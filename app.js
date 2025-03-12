@@ -30,6 +30,7 @@ app.use(
     secret: "secret code", // 세션 암호화에 사용할 키
     resave: false, // 세션 변경 시마다 저장하는 설정
     saveUninitialized: true, // 세션 초기화 상태에서 저장할지 여부
+    cookie: { secure: true },
   })
 );
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
