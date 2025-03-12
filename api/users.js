@@ -93,9 +93,9 @@ router.post("/", async (req, res) => {
 
     res.cookie("sessionId", sessionId, {
       httpOnly: true,
-      secure: false, // 배포 시 true (HTTPS 필수)
+      secure: true, // 배포 시 true (HTTPS 필수)
       maxAge: 7 * 24 * 60 * 60 * 1000,
-      sameSite: "None", // 7일 유지
+      sameSite: "none", // 7일 유지
     });
 
     res.status(201).json({ message: "회원가입 및 자동 로그인 완료" });
