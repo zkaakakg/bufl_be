@@ -124,10 +124,10 @@ router.post("/", async (req, res) => {
     if (accountResult.length === 0) {
       return res.status(404).json({ message: "해당 계좌를 찾을 수 없습니다." });
     }
-
+    const monthly_saving_amt = monthly_saving * 10000;
     const account = accountResult[0]; // 계좌 정보
-    const goal_amount = monthly_saving * goal_duration;
-    const dynamicGoalName = `${goal_amount} 모으기`;
+    const goal_amount = monthly_saving_amt * goal_duration;
+    const dynamicGoalName = `${goal_amount / 10000} 만원 모으기`;
 
     // 목표 저장
     const [result] = await db.query(
@@ -140,7 +140,7 @@ router.post("/", async (req, res) => {
         goal_duration,
         userId,
         account_id,
-        monthly_saving,
+        monthly_saving_amt,
         0, // 초기 금액
       ]
     );
@@ -151,8 +151,8 @@ router.post("/", async (req, res) => {
     let transactionMessage = "첫 자동이체 성공";
     let firstTransactionSuccess = false;
 
-    if (account.balance >= monthly_saving) {
-      const newBalance = account.balance - monthly_saving;
+    if (account.balance >= monthly_saving_amt) {
+      const newBalance = account.balance - monthly_saving_amt;
 
       // 계좌 잔액 차감
       await db.query(`UPDATE account SET balance = ? WHERE id = ?`, [
@@ -162,7 +162,7 @@ router.post("/", async (req, res) => {
 
       // 목표 금액 업데이트
       await db.query(`UPDATE goal SET current_amount = ? WHERE id = ?`, [
-        monthly_saving,
+        monthly_saving_amt,
         goalId,
       ]);
 
@@ -174,7 +174,7 @@ router.post("/", async (req, res) => {
           account_id,
           account.account_number,
           dynamicGoalName,
-          monthly_saving,
+          monthly_saving_amt,
           newBalance,
         ]
       );
