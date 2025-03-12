@@ -279,6 +279,7 @@ router.get("/recommend", async (req, res) => {
 
     const salary = salaryInfo[0].amount;
     const transactions = req.session.analysisResult;
+
     const recommendResult = await recommendRatio(
       salary,
       interests,
@@ -287,6 +288,7 @@ router.get("/recommend", async (req, res) => {
 
     delete req.session.transactions;
     req.session.recommendResult = recommendResult.recommendRatio;
+    req.session.save();
 
     res.send(recommendResult);
   } catch (err) {
@@ -389,6 +391,7 @@ router.get("/", async (req, res) => {
 
     const analysisResult = await consumptionPattern(transactions);
     req.session.analysisResult = analysisResult;
+    req.session.save();
 
     res.send(analysisResult);
   } catch (err) {
