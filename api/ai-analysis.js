@@ -296,7 +296,7 @@ router.get("/recommend", async (req, res) => {
   }
 });
 
-router.post("/recommend", async (req, res) => {
+router.get("/add-category", async (req, res) => {
   const sessionId = req.cookies.sessionId;
   if (!sessionId) return res.status(401).json({ message: "세션 없음" });
 
@@ -311,6 +311,8 @@ router.post("/recommend", async (req, res) => {
 
     const userId = session[0].user_id;
     const recommendResult = req.session.recommendResult;
+    console.log(recommendResult);
+
     const colorList = [
       "#FF6B86",
       "#BDEEB6",
