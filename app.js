@@ -25,30 +25,15 @@ app.use(
   })
 );
 
-// app.use(
-//   session({
-//     secret: "secret code", // 세션 암호화에 사용할 키
-//     resave: false, // 세션 변경 시마다 저장하는 설정
-//     saveUninitialized: true, // 세션 초기화 상태에서 저장할지 여부
-//     cookie: { secure: true },
-//   })
-// );
-
 app.use(
   session({
-    key: "sessionValue", // 프론트엔드에서 저장할 쿠키 이름
-    secret: "your-secret-key", // 보안 키
-    resave: false, // 변경되지 않으면 세션을 다시 저장하지 않음
-    saveUninitialized: false, // 초기화되지 않은 세션을 저장하지 않음
-    cookie: {
-      httpOnly: true, // XSS 방지
-      secure: true, // HTTPS 환경에서만 쿠키 전달
-      sameSite: "none", // 크로스사이트 요청 방지
-      maxAge: 1000 * 60 * 60 * 24, // 1일
-      domain: ".vercel.app",
-    },
+    secret: "secret code", // 세션 암호화에 사용할 키
+    resave: false, // 세션 변경 시마다 저장하는 설정
+    saveUninitialized: true, // 세션 초기화 상태에서 저장할지 여부
+    cookie: { secure: true },
   })
 );
+
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 app.use("/api/users", usersRouter); // 라우터 등록
 app.use("/api/accounts", accountRouter); // 라우터 등록
