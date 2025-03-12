@@ -20,7 +20,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "https://localhost:3000", // 프론트엔드 주소
+    origin: "https://buflfe.vercel.app", // 프론트엔드 주소
     credentials: true, // 쿠키 허용
   })
 );
