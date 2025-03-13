@@ -4,7 +4,6 @@ exports.getAccounts = async (req, res) => {
   try {
     const sessionId = req.cookies.sessionId;
     if (!sessionId) return res.status(401).json({ message: "세션 없음" });
-    console.log(sessionId);
 
     const accounts = await accountService.getUserAccounts(sessionId);
     res.status(200).json(accounts);
