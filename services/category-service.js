@@ -9,12 +9,30 @@ exports.getCategories = async (sessionId) => {
   if (session.length === 0) throw new Error("세션 만료됨");
 
   const userId = session[0].user_id;
+  const [salaryAccount] = await db.query(
+    "SELECT bank_name, account_number FROM account WHERE id = (SELECT account_id FROM salary WHERE user_id = ?)",
+    [userId]
+  );
+
   const [categories] = await db.query(
     "SELECT id, name, goal_amount, background_color, ratio, amount FROM categories WHERE user_id = ?",
     [userId]
   );
 
-  return categories;
+  const result = categories.map((category) => {
+    if (category.name === "월급 통장") {
+      return {
+        ...category,
+        bank_name: salaryAccount.length ? salaryAccount[0].bank_name : null,
+        account_number: salaryAccount.length
+          ? salaryAccount[0].account_number
+          : null,
+      };
+    }
+    return category;
+  });
+
+  return result;
 };
 
 exports.getCategoryById = async (categoryId) => {

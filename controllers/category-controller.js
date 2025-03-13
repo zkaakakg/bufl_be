@@ -6,7 +6,7 @@ exports.getCategories = async (req, res) => {
     if (!sessionId) return res.status(401).json({ message: "세션 없음" });
 
     const categories = await categoryService.getCategories(sessionId);
-    res.status(200).json({ categories });
+    res.status(200).json({ categories: categories });
   } catch (err) {
     console.error("카테고리 조회 오류:", err);
     res.status(500).json({ message: "서버 오류" });
