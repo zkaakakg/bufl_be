@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
-const db = require("./db/db"); // DB 설정 파일
+const session = require("express-session");
+const cookieParser = require("cookie-parser");
 const { specs, swaggerUi } = require("./swagger/swagger-config"); // swagger 설정
 const usersRouter = require("./api/users"); // 사용자 라우터 가져오기
 const accountRouter = require("./api/account"); // 계좌목록 가져오기
@@ -10,8 +11,6 @@ const expensesRouter = require("./api/expenses"); // 소비내역 가져오기
 const goalRouter = require("./api/goal"); // 목표
 const aiAnalysisRouter = require("./api/ai-analysis.js");
 const goalAI = require("./api/ai-goal.js"); // goalai.js에서 router 가져오기
-const session = require("express-session");
-const cookieParser = require("cookie-parser");
 
 const app = express();
 const port = 5000;
