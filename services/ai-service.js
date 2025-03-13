@@ -38,8 +38,8 @@ exports.consumptionPattern = async (transactions) => {
       },
     ],
   });
-
-  return JSON.parse(response.content[0].text);
+  const parsedResponse = JSON.parse(response.content[0].text);
+  return parsedResponse;
 };
 
 exports.recommendRatio = async (salary, interests, transactions) => {
@@ -83,8 +83,8 @@ exports.recommendRatio = async (salary, interests, transactions) => {
       },
     ],
   });
-
-  return JSON.parse(response.content[0].text);
+  const parsedResponse = JSON.parse(response.content[0].text);
+  return parsedResponse;
 };
 
 exports.getGoalRecommendations = async (req) => {
