@@ -5,7 +5,7 @@ const cookieParser = require("cookie-parser");
 const { specs, swaggerUi } = require("./swagger/swagger-config"); // swagger 설정
 const usersRouter = require("./routes/user-routes"); // 사용자 라우터 가져오기
 const accountRouter = require("./routes/account-routes"); // 계좌목록 가져오기
-// const salaryRouter = require("./routes/category-routes"); //월급 쪼개기 카테고리 라우터 가져오기
+const salaryRouter = require("./routes/category-routes"); //월급 쪼개기 카테고리 라우터 가져오기
 const transactionsRouter = require("./routes/transfer-routes"); // 자동이체
 const expensesRouter = require("./routes/expense-routes"); // 소비내역 가져오기
 const goalRouter = require("./routes/goal-routes"); // 목표
@@ -14,7 +14,7 @@ const goalAI = require("./routes/aigoal-routes"); // goalai.js에서 router 가�
 
 // const usersRouter = require("./api/users"); // 사용자 라우터 가져오기
 // const accountRouter = require("./api/account"); // 계좌목록 가져오기
-const salaryRouter = require("./api/salary");
+// const salaryRouter = require("./api/salary");
 // const transactionsRouter = require("./api/transactions");
 // const expensesRouter = require("./api/expenses"); // 소비내역 가져오기
 // const goalRouter = require("./api/goal"); // 목표
