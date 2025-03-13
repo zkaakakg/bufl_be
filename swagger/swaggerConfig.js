@@ -15,7 +15,7 @@ const options = {
       },
     ],
   },
-  apis: ["./api/*.js"], // Swagger 주석을 포함할 API 파일 경로
+  apis: ["./swagger/*.js"], // Swagger 주석을 포함할 API 파일 경로
 };
 
 const specs = swaggerJsdoc(options);
