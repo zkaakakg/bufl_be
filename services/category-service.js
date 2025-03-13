@@ -20,7 +20,7 @@ exports.getCategories = async (sessionId) => {
   );
 
   const result = categories.map((category) => {
-    if (category.name === "월급 통장") {
+    if (category.name === "월급 통장" || category.name === "💰 월급 통장") {
       return {
         ...category,
         bank_name: salaryAccount.length ? salaryAccount[0].bank_name : null,
