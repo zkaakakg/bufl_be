@@ -18,6 +18,14 @@ exports.registerUser = async (req, res) => {
       userPhone,
       userPassword
     );
+
+    res.cookie("sessionId", result.sessionId, {
+      httpOnly: true,
+      secure: true, // 배포 시 true (HTTPS 필수)
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      sameSite: "none", // 7일 유지
+    });
+
     res.status(201).json(result);
   } catch (err) {
     console.error("회원가입 오류:", err);
