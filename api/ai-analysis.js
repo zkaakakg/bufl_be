@@ -1,5 +1,4 @@
 const express = require("express");
-// const session = require("express-session");
 const router = express.Router();
 const db = require("../db/db");
 
@@ -12,146 +11,8 @@ const anthropic = new Anthropic({
 
 const analysisStore = new Map();
 const recommendStore = new Map();
-/**
- * @swagger
- * /api/ai-analysis/recommend:
- *   get:
- *     summary: 추천 결과 조회
- *     description: 로그인된 사용자의 관심사와 급여 정보 등을 바탕으로 추천 결과를 조회합니다.
- *     tags: [Ai]
- *     responses:
- *       200:
- *         description: 추천 결과를 반환합니다.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 recommendRatio:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       category:
- *                         type: string
- *                       ratio:
- *                         type: number
- *                       amount:
- *                         type: number
- *       400:
- *         description: 로그인되지 않은 경우
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "로그인이 필요합니다."
- *       500:
- *         description: 서버 오류
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 error:
- *                   type: string
- *                   example: "Internal server error"
- */
 
-/**
- * @swagger
- * /api/ai-analysis/recommend:
- *   post:
- *     summary: 추천 결과 저장
- *     description: 추천 결과를 카테고리 테이블에 저장합니다.
- *     tags: [Ai]
- *     responses:
- *       201:
- *         description: 추천 결과가 성공적으로 저장되었습니다.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "5개의 카테고리가 추가되었습니다."
- *       500:
- *         description: 서버 오류
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "서버 오류"
- */
-
-/**
- * @swagger
- * /api/ai-analysis/:
- *   get:
- *     summary: 거래내역 조회
- *     description: 사용자의 거래내역을 조회하여 소비 패턴 분석 결과를 반환합니다.
- *     tags: [Ai]
- *     responses:
- *       200:
- *         description: 소비 패턴 분석 결과를 반환합니다.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 analysisResult:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       category:
- *                         type: string
- *                       amount:
- *                         type: number
- *       400:
- *         description: 로그인되지 않은 경우
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "로그인이 필요합니다."
- *       404:
- *         description: 거래내역이 없는 경우
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 message:
- *                   type: string
- *                   example: "거래내역이 없습니다."
- *       500:
- *         description: 서버 오류
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 error:
- *                   type: string
- *                   example: "Internal server error"
- */
-
+// 소비패턴 AI
 async function consumptionPattern(transactions) {
   try {
     const transactionSummary = transactions.map((transaction) => {
@@ -198,11 +59,10 @@ async function consumptionPattern(transactions) {
   }
 }
 
+// 카테고리/비율 추천 AI
 async function recommendRatio(salary, interests, transactions) {
   try {
     const interestSummary = interests[0].name;
-
-    // const analysisSummary = await consumptionPattern(transactions);
 
     const response = await anthropic.messages.create({
       model: "claude-3-7-sonnet-20250219",
@@ -252,6 +112,42 @@ async function recommendRatio(salary, interests, transactions) {
   }
 }
 
+// 소비패턴
+router.get("/", async (req, res) => {
+  const sessionId = req.cookies.sessionId;
+  if (!sessionId) return res.status(401).json({ message: "세션 없음" });
+
+  try {
+    const [session] = await db.query(
+      "SELECT user_id FROM sessions WHERE session_id = ?",
+      [sessionId]
+    );
+    //session  없으면 만료
+    if (session.length === 0)
+      return res.status(401).json({ message: "세션 만료됨" });
+
+    const userId = session[0].user_id;
+    const [transactions] = await db.query(
+      "SELECT * FROM transaction WHERE account_id IN (SELECT id FROM account WHERE user_id = ?) AND inout_type = 'OUT'",
+      [userId]
+    );
+
+    if (transactions.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "거래내역이 없습니다." });
+    }
+
+    const analysisResult = await consumptionPattern(transactions);
+    analysisStore.set(userId, analysisResult);
+
+    res.send(analysisResult);
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// 추천 카테고리/비율
 router.get("/recommend", async (req, res) => {
   const sessionId = req.cookies.sessionId;
   if (!sessionId) return res.status(401).json({ message: "세션 없음" });
@@ -270,10 +166,6 @@ router.get("/recommend", async (req, res) => {
       "SELECT * FROM interests WHERE user_id = ?",
       [userId]
     );
-    // const [transactions] = await db.query(
-    //   "SELECT * FROM transaction WHERE account_id IN (SELECT account_id FROM account WHERE user_id = ?) AND inout_type = 'OUT'",
-    //   [userId]
-    // );
 
     const [salaryInfo] = await db.query(
       "SELECT * FROM salary WHERE user_id = ?",
@@ -290,7 +182,6 @@ router.get("/recommend", async (req, res) => {
     );
 
     recommendStore.set(userId, recommendResult.recommendRatio);
-    req.session.save();
 
     res.send(recommendResult);
   } catch (err) {
@@ -298,6 +189,7 @@ router.get("/recommend", async (req, res) => {
   }
 });
 
+// 추천 카테고리/비율 저장
 router.get("/add-category", async (req, res) => {
   const sessionId = req.cookies.sessionId;
   if (!sessionId) return res.status(401).json({ message: "세션 없음" });
@@ -364,40 +256,6 @@ router.get("/add-category", async (req, res) => {
   } catch (err) {
     console.error("카테고리 추가 오류:", err);
     res.status(500).json({ message: "서버 오류" });
-  }
-});
-
-router.get("/", async (req, res) => {
-  const sessionId = req.cookies.sessionId;
-  if (!sessionId) return res.status(401).json({ message: "세션 없음" });
-
-  try {
-    const [session] = await db.query(
-      "SELECT user_id FROM sessions WHERE session_id = ?",
-      [sessionId]
-    );
-    //session  없으면 만료
-    if (session.length === 0)
-      return res.status(401).json({ message: "세션 만료됨" });
-
-    const userId = session[0].user_id;
-    const [transactions] = await db.query(
-      "SELECT * FROM transaction WHERE account_id IN (SELECT id FROM account WHERE user_id = ?) AND inout_type = 'OUT'",
-      [userId]
-    );
-
-    if (transactions.length === 0) {
-      return res
-        .status(404)
-        .json({ success: false, message: "거래내역이 없습니다." });
-    }
-
-    const analysisResult = await consumptionPattern(transactions);
-    analysisStore.set(userId, analysisResult);
-
-    res.send(analysisResult);
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
   }
 });
 
