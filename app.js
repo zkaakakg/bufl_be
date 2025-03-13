@@ -15,14 +15,15 @@ const goalAI = require("./routes/aigoal-routes"); // goalai.js에서 router 가�
 const app = express();
 const port = 5000;
 
-app.use(express.json());
-app.use(cookieParser());
 app.use(
   cors({
     origin: "https://buflfe.vercel.app", // 프론트엔드 주소
     credentials: true, // 쿠키 허용
   })
 );
+
+app.use(express.json());
+app.use(cookieParser());
 
 app.use(
   session({
