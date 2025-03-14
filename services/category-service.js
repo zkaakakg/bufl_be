@@ -1,3 +1,5 @@
+const db = require("../db/db");
+
 exports.getCategories = async (sessionId) => {
   const [session] = await db.query(
     "SELECT user_id FROM sessions WHERE session_id = ?",
