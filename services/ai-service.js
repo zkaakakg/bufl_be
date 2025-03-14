@@ -117,7 +117,26 @@ exports.getGoalRecommendations = async (req) => {
     messages: [
       {
         role: "user",
-        content: `사용자의 관심사에 따라 저축 목표를 추천해주세요. 목표 금액은 50만원에서 300만원 사이로 설정하고, 기간은 3개월에서 36개월 사이로 설정해주세요.\n\n관심사: ${interestSummary}\n형식은 예를 들어\nrecommendations: [\n {\n id: 0,\n goal_name: '여행 자금 마련',\n goal_amount: 800000,\n goal_duration: 3,\n monthly_saving: 250000\n },\n {\n id: 1,\n goal_name: '겨울 패딩 구매',\n goal_amount: 500000,\n goal_duration: 5,\n monthly_saving: 100000\n }\n] 로 JSON 형식으로 제공해주세요.`,
+        content: `사용자의 관심사에 따라 저축 목표를 추천해주세요. 목표 금액은 50만원에서 300만원 사이로 설정하고, 기간은 3개월에서 36개월 사이로 설정해주세요.
+        
+        관심사: ${interestSummary}
+        형식은 예를 들어
+        recommendations: [ 
+        {
+          id: 0,
+          goal_name: '여행 자금 마련',
+          goal_amount: 800000,
+          goal_duration: 3,
+          monthly_saving: 250000
+        },
+        {
+          id: 1,
+          goal_name: '겨울 패딩 구매',
+          goal_amount: 500000,
+          goal_duration: 5,
+          monthly_saving: 100000
+         }
+      ] 로 JSON 형식으로 제공해주세요.`,
       },
     ],
   });
