@@ -148,10 +148,10 @@ exports.getGoalRecommendations = async (req) => {
 };
 
 exports.saveGoal = async (
-  { goal_name, monthly_saving, goal_duration, accountId },
+  { goal_name, monthly_saving, goal_duration },
   sessionId
 ) => {
-  if (!goal_name || !accountId || !monthly_saving || !goal_duration) {
+  if (!goal_name || !monthly_saving || !goal_duration) {
     throw new Error("필수 입력값 누락");
   }
 
@@ -174,7 +174,7 @@ exports.saveGoal = async (
       goal_duration,
       goal_duration,
       userId,
-      accountId,
+      1, // account_id를 1로 고정
       monthly_saving_amt,
     ]
   );
@@ -182,7 +182,7 @@ exports.saveGoal = async (
   const newGoalId = result.insertId;
   const [accountResult] = await db.query(
     "SELECT account_number, balance FROM account WHERE id = ?",
-    [accountId]
+    [1] // account_id를 1로 고정
   );
   const account = accountResult[0];
 
@@ -190,7 +190,7 @@ exports.saveGoal = async (
     const newBalance = account.balance - monthly_saving_amt;
     await db.query("UPDATE account SET balance = ? WHERE id = ?", [
       newBalance,
-      accountId,
+      1, // account_id를 1로 고정
     ]);
     await db.query(
       "UPDATE goal SET current_amount = current_amount + ? WHERE id = ?",
@@ -200,7 +200,7 @@ exports.saveGoal = async (
       `INSERT INTO transaction (account_id, from_account_number, to_account_number, inout_type, tran_amt, tran_balance_amt, tran_desc)
        VALUES (?, ?, ?, 'OUT', ?, ?, '목표 저축')`,
       [
-        accountId,
+        1, // account_id를 1로 고정
         account.account_number,
         goal_name,
         monthly_saving_amt,
