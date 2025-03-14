@@ -63,8 +63,8 @@
  *   /api/ai-goals/generate-goals:
  *     post:
  *       tags: [Ai]
- *       summary: 사용자가 선택한 목표를 생성하고 자동이체를 실행합니다.
- *       description: 사용자가 선택한 목표 정보를 기반으로 목표를 생성하고, 자동이체가 실행됩니다.
+ *       summary: 사용자가 선택한 목표를 생성 합니다.
+ *       description: 사용자가 선택한 목표 정보를 기반으로 목표를 생성.
  *       requestBody:
  *         required: true
  *         content:
