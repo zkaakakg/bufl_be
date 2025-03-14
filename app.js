@@ -9,7 +9,7 @@ const salaryRouter = require("./routes/category-routes"); //월급 쪼개기 카
 const transactionsRouter = require("./routes/transfer-routes"); // 자동이체
 const expensesRouter = require("./routes/expense-routes"); // 소비내역 가져오기
 const goalRouter = require("./routes/goal-routes"); // 목표
-const aiAnalysisRouter = require("./routes/analysis-routes"); //ai 소비 분석 / 카테고리리 비율 추천
+// const aiAnalysisRouter = require("./routes/analysis-routes"); //ai 소비 분석 / 카테고리리 비율 추천
 const goalAI = require("./routes/aigoal-routes"); // goalai.js에서 router 가져오기
 
 // const usersRouter = require("./api/users"); // 사용자 라우터 가져오기
@@ -18,7 +18,7 @@ const goalAI = require("./routes/aigoal-routes"); // goalai.js에서 router 가�
 // const transactionsRouter = require("./api/transactions");
 // const expensesRouter = require("./api/expenses"); // 소비내역 가져오기
 // const goalRouter = require("./api/goal"); // 목표
-// const aiAnalysisRouter = require("./api/ai-analysis.js");
+const aiAnalysisRouter = require("./api/ai-analysis.js");
 // const goalAI = require("./api/ai-goal.js"); // goalai.js에서 router 가져오기
 const app = express();
 const port = 5000;
