@@ -3,7 +3,7 @@ const cors = require("cors");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
 const { specs, swaggerUi } = require("./swagger/swagger-config"); // swagger 설정
-// const usersRouter = require("./routes/user-routes"); // 사용자 라우터 가져오기
+const usersRouter = require("./routes/user-routes"); // 사용자 라우터 가져오기
 const accountRouter = require("./routes/account-routes"); // 계좌목록 가져오기
 const salaryRouter = require("./routes/category-routes"); //월급 쪼개기 카테고리 라우터 가져오기
 const transactionsRouter = require("./routes/transfer-routes"); // 자동이체
@@ -12,7 +12,7 @@ const goalRouter = require("./routes/goal-routes"); // 목표
 const aiAnalysisRouter = require("./routes/analysis-routes"); //ai 소비 분석 / 카테고리리 비율 추천
 const goalAI = require("./routes/aigoal-routes"); // goalai.js에서 router 가져오기
 
-const usersRouter = require("./api/users"); // 사용자 라우터 가져오기
+// const usersRouter = require("./api/users"); // 사용자 라우터 가져오기
 // const accountRouter = require("./api/account"); // 계좌목록 가져오기
 // const salaryRouter = require("./api/salary");
 // const transactionsRouter = require("./api/transactions");
