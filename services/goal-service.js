@@ -1,12 +1,11 @@
 const db = require("../db/db");
-
 exports.createGoal = async (req) => {
   const sessionId = req.cookies.sessionId;
   if (!sessionId) throw new Error("세션 없음");
 
-  const { monthly_saving, goal_duration, account_id } = req.body;
+  const { monthly_saving, goal_duration } = req.body;
 
-  if (!account_id || !monthly_saving || !goal_duration) {
+  if (!monthly_saving || !goal_duration) {
     throw new Error("모든 필드를 입력해주세요.");
   }
 
@@ -20,32 +19,21 @@ exports.createGoal = async (req) => {
 
   const userId = session[0].user_id;
 
-  // 계좌 정보 확인
-  const [accountResult] = await db.query(
-    `SELECT account_number, balance FROM account WHERE id = ? AND user_id = ?`,
-    [account_id, userId]
-  );
-
-  if (accountResult.length === 0) {
-    throw new Error("해당 계좌를 찾을 수 없습니다.");
-  }
-
   const monthly_saving_amt = monthly_saving * 10000;
-  const account = accountResult[0]; // 계좌 정보
   const goal_amount = monthly_saving_amt * goal_duration;
   const dynamicGoalName = `${goal_amount / 10000} 만원 모으기`;
 
   // 목표 저장
   const [result] = await db.query(
     `INSERT INTO goal (goal_name, goal_amount, goal_duration, goal_start, goal_end, user_id, account_id, monthly_saving, current_amount)
-    VALUES (?, ?, ?, CURRENT_TIMESTAMP, DATE_ADD(CURRENT_TIMESTAMP, INTERVAL ? MONTH), ?, ?, ?, ?)`,
+    VALUES (?, ?, ?, CURRENT_TIMESTAMP, DATE_ADD(CURRENT_TIMESTAMP, INTERVAL ? MONTH), ?, 1, ?, ?)`,
+
     [
       dynamicGoalName,
       goal_amount,
       goal_duration,
       goal_duration,
       userId,
-      account_id,
       monthly_saving_amt,
       0, // 초기 금액
     ]
@@ -57,14 +45,15 @@ exports.createGoal = async (req) => {
   let transactionMessage = "첫 자동이체 성공";
   let firstTransactionSuccess = false;
 
+  // 무조건 account_id가 1인 계좌에서 처리하도록 변경
+  const [accountResult] = await db.query("SELECT * FROM account WHERE id = 1");
+  const account = accountResult[0]; // 계좌 정보
+
   if (account.balance >= monthly_saving_amt) {
     const newBalance = account.balance - monthly_saving_amt;
 
     // 계좌 잔액 차감
-    await db.query(`UPDATE account SET balance = ? WHERE id = ?`, [
-      newBalance,
-      account_id,
-    ]);
+    await db.query(`UPDATE account SET balance = ? WHERE id = 1`, [newBalance]);
 
     // 목표 금액 업데이트
     await db.query(`UPDATE goal SET current_amount = ? WHERE id = ?`, [
@@ -75,14 +64,8 @@ exports.createGoal = async (req) => {
     // 트랜잭션 기록
     await db.query(
       `INSERT INTO transaction (account_id, from_account_number, to_account_number, inout_type, tran_amt, tran_balance_amt, tran_desc)
-      VALUES (?, ?, ?, 'OUT', ?, ?, '목표 저축')`,
-      [
-        account_id,
-        account.account_number,
-        dynamicGoalName,
-        monthly_saving_amt,
-        newBalance,
-      ]
+      VALUES (1, ?, ?, 'OUT', ?, ?, '목표 저축')`,
+      [account.account_number, dynamicGoalName, monthly_saving_amt, newBalance]
     );
 
     firstTransactionSuccess = true;
@@ -98,6 +81,7 @@ exports.createGoal = async (req) => {
     transaction_message: transactionMessage,
   };
 };
+
 exports.getGoals = async (req) => {
   const sessionId = req.cookies.sessionId;
   if (!sessionId) throw new Error("세션 없음");
