@@ -81,23 +81,68 @@ exports.createGoal = async (req) => {
     transaction_message: transactionMessage,
   };
 };
+// 목표 시작 날짜로부터 경과한 개월 수 계산 함수
+function getElapsedMonths(goalStart) {
+  const startDate = new Date(goalStart);
+  const currentDate = new Date();
+  const elapsedMonths =
+    (currentDate.getFullYear() - startDate.getFullYear()) * 12 +
+    currentDate.getMonth() -
+    startDate.getMonth();
+
+  console.log(`목표 시작일: ${goalStart}, 경과한 월: ${elapsedMonths}`);
+  return Math.max(elapsedMonths, 0);
+}
+
+// 목표 완료 확률 계산 함수 (기간을 고려하지 않음)
+function calculateGoalCompletionProbability(goalAmount, currentAmount) {
+  // 목표 금액이 0이면 확률 0% (목표 금액이 잘못 설정된 경우 처리)
+  if (goalAmount <= 0) {
+    return 0;
+  }
+
+  // 진행된 비율을 계산
+  const probability = Math.min((currentAmount / goalAmount) * 100, 100); // 100%를 초과하지 않도록 처리
+
+  return probability;
+}
 
 exports.getGoals = async (req) => {
   const sessionId = req.cookies.sessionId;
   if (!sessionId) throw new Error("세션 없음");
 
-  const [session] = await db.query(
-    "SELECT user_id FROM sessions WHERE session_id = ?",
-    [sessionId]
-  );
-  if (session.length === 0) throw new Error("세션 만료됨");
+  try {
+    const [session] = await db.query(
+      "SELECT user_id FROM sessions WHERE session_id = ?",
+      [sessionId]
+    );
+    if (session.length === 0) throw new Error("세션 만료됨");
 
-  const userId = session[0].user_id;
-  const [goals] = await db.query("SELECT * FROM goal WHERE user_id = ?", [
-    userId,
-  ]);
+    const userId = session[0].user_id;
+    const [results] = await db.query("SELECT * FROM goal WHERE user_id = ?", [
+      userId,
+    ]);
 
-  return goals;
+    if (results.length === 0) {
+      throw new Error("목표 내역이 없습니다.");
+    }
+
+    // 목표에 완료 확률을 계산하여 추가
+    const goalsWithProbability = results.map((goal) => {
+      const probability = Math.round(
+        calculateGoalCompletionProbability(
+          parseInt(goal.goal_amount), // 목표 금액은 숫자형으로 변환
+          parseInt(goal.current_amount || 0) // 현재 금액은 숫자형으로 변환
+        )
+      );
+      return { ...goal, probability: probability };
+    });
+
+    return { message: "목표 내역", goals: goalsWithProbability }; // 결과를 반환
+  } catch (err) {
+    console.error(err);
+    throw new Error("서버 오류");
+  }
 };
 
 exports.getGoalById = async (req) => {
