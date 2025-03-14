@@ -81,18 +81,6 @@ exports.createGoal = async (req) => {
     transaction_message: transactionMessage,
   };
 };
-// 목표 시작 날짜로부터 경과한 개월 수 계산 함수
-function getElapsedMonths(goalStart) {
-  const startDate = new Date(goalStart);
-  const currentDate = new Date();
-  const elapsedMonths =
-    (currentDate.getFullYear() - startDate.getFullYear()) * 12 +
-    currentDate.getMonth() -
-    startDate.getMonth();
-
-  console.log(`목표 시작일: ${goalStart}, 경과한 월: ${elapsedMonths}`);
-  return Math.max(elapsedMonths, 0);
-}
 
 // 목표 완료 확률 계산 함수 (기간을 고려하지 않음)
 function calculateGoalCompletionProbability(goalAmount, currentAmount) {
@@ -106,7 +94,6 @@ function calculateGoalCompletionProbability(goalAmount, currentAmount) {
 
   return probability;
 }
-
 exports.getGoals = async (req) => {
   const sessionId = req.cookies.sessionId;
   if (!sessionId) throw new Error("세션 없음");
