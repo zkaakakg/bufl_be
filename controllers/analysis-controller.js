@@ -3,6 +3,8 @@ const consumptionService = require("../services/consumption-service");
 exports.getConsumptionPattern = async (req, res) => {
   try {
     const sessionId = req.cookies.sessionId;
+    console.log(sessionId);
+
     if (!sessionId) return res.status(401).json({ message: "세션 없음" });
 
     const result = await consumptionService.analyzeConsumptionPattern(
