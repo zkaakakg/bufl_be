@@ -68,6 +68,8 @@ exports.verifyPin = async (req, res) => {
 
 exports.getSalaryInfo = async (req, res) => {
   const sessionId = req.cookies.sessionId;
+  console.log(sessionId);
+
   try {
     const result = await userService.getSalaryInfo(sessionId);
     res.status(200).json(result);

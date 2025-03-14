@@ -83,10 +83,13 @@ exports.verifyPin = async (sessionId, userPassword) => {
 exports.getSalaryInfo = async (sessionId) => {
   if (!sessionId) throw new Error("세션 없음");
 
+  console.log(sessionId);
+
   const [session] = await db.query(
     "SELECT user_id FROM sessions WHERE session_id = ?",
     [sessionId]
   );
+  console.log(session);
 
   if (session.length === 0) throw new Error("세션 만료됨");
 
