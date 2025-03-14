@@ -119,7 +119,8 @@ exports.getGoals = async (req) => {
       const probability = Math.round(
         calculateGoalCompletionProbability(
           parseInt(goal.goal_amount), // 목표 금액은 숫자형으로 변환
-          parseInt(goal.current_amount || 0) // 현재 금액은 숫자형으로 변환
+          parseInt(goal.current_amount || 0), // 현재 금액은 숫자형으로 변환
+          goal.goal_duration
         )
       );
       return { ...goal, probability: probability };
