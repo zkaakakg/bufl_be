@@ -50,8 +50,8 @@
 
 /**
  * @swagger
- * /api/ai-analysis/recommend:
- *   post:
+ * /api/ai-analysis/add-category:
+ *   get:
  *     summary: 추천 결과 저장
  *     description: 추천 결과를 카테고리 테이블에 저장합니다.
  *     tags: [Ai]
