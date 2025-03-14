@@ -19,7 +19,7 @@ exports.createGoal = async (req) => {
 
   const userId = session[0].user_id;
 
-  const monthly_saving_amt = monthly_saving * 10000;
+  const monthly_saving_amt = monthly_saving;
   const goal_amount = monthly_saving_amt * goal_duration;
   const dynamicGoalName = `${goal_amount / 10000} 만원 모으기`;
 
